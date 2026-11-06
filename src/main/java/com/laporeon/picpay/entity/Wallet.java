@@ -13,6 +13,7 @@ import jakarta.persistence.Table;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -25,24 +26,27 @@ public class Wallet {
     private UUID id;
 
     @Column(name = "full_name")
-    String fullName;
+    private String fullName;
 
     @Column(unique = true)
-    String document;
+    private  String document;
 
     @Column(unique = true)
-    String email;
+    private String email;
 
     @Column
-    String password;
+    private String password;
 
     @Column(name = "wallet_type")
     @Enumerated(EnumType.STRING)
-    WalletType walletType;
+    private WalletType walletType;
+
+    @Column(name = "balance")
+    private BigDecimal balance;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
-    Instant createdAt;
+    private Instant createdAt;
 
     public Wallet(String fullName, String document, String email, String password, WalletType walletType) {
         this.fullName = fullName;
@@ -50,6 +54,7 @@ public class Wallet {
         this.email = email;
         this.password = password;
         this.walletType = walletType;
+        this.balance = BigDecimal.ZERO;
     }
 
     public UUID getId() {
@@ -96,6 +101,10 @@ public class Wallet {
         this.walletType = walletType;
     }
 
+    public BigDecimal getBalance() {
+        return balance;
+    }
+    
     public Instant getCreatedAt() {
         return createdAt;
     }
