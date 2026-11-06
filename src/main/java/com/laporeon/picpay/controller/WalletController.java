@@ -4,6 +4,7 @@ import com.laporeon.picpay.dtos.CreateWalletDTO;
 import com.laporeon.picpay.entity.Wallet;
 import com.laporeon.picpay.service.WalletService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +23,6 @@ public class WalletController {
     @PostMapping
     public ResponseEntity<Wallet> createWallet(@Valid @RequestBody CreateWalletDTO createWalletDTO) {
         var wallet = walletService.createWallet(createWalletDTO);
-        return ResponseEntity.ok(wallet);
+        return ResponseEntity.status(HttpStatus.CREATED).body(wallet);
     }
 }
