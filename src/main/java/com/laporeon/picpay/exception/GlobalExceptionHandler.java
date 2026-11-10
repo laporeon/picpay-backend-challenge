@@ -1,5 +1,6 @@
 package com.laporeon.picpay.exception;
 
+import com.laporeon.picpay.exception.custom.InvalidDocumentTypeException;
 import com.laporeon.picpay.exception.custom.RegistrationConflictException;
 import com.laporeon.picpay.exception.utils.ErrorResponse;
 import com.laporeon.picpay.exception.utils.ValidationErrorResponse;
@@ -30,6 +31,17 @@ public class GlobalExceptionHandler {
                 errors,
                 Instant.now());
 
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT).body(error);
+    }
+
+    @ExceptionHandler(InvalidDocumentTypeException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidDocumentTypeException(InvalidDocumentTypeException ex) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "INVALID_DOCUMENT_TYPE",
+                ex.getMessage(),
+                Instant.now());
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
@@ -41,7 +53,7 @@ public class GlobalExceptionHandler {
                 ex.getMessage(),
                 Instant.now());
 
-        return ResponseEntity.internalServerError().body(error);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
     @ExceptionHandler(Exception.class)
