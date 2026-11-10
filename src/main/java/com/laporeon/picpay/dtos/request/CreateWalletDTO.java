@@ -1,4 +1,4 @@
-package com.laporeon.picpay.dtos;
+package com.laporeon.picpay.dtos.request;
 
 import com.laporeon.picpay.enums.WalletType;
 import jakarta.validation.constraints.NotBlank;
