@@ -1,9 +1,9 @@
 package com.laporeon.picpay.exception;
 
 import com.laporeon.picpay.exception.custom.RegistrationConflictException;
-import com.laporeon.picpay.exception.dtos.ErrorResponse;
-import com.laporeon.picpay.exception.dtos.ValidationErrorResponse;
-import com.laporeon.picpay.exception.dtos.ValidationErrorResponse.FieldError;
+import com.laporeon.picpay.exception.utils.ErrorResponse;
+import com.laporeon.picpay.exception.utils.ValidationErrorResponse;
+import com.laporeon.picpay.exception.utils.ValidationErrorResponse.FieldError;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
                                     .toList();
 
         ValidationErrorResponse error = new ValidationErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.UNPROCESSABLE_CONTENT.value(),
                 "VALIDATION_ERROR",
                 "Request validation failed for one or more fields",
                 errors,
@@ -45,7 +45,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleException(Exception ex) {
+    public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
         ErrorResponse error = new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "INTERNAL_SERVER_ERROR",
