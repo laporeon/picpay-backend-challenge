@@ -1,4 +1,4 @@
-package com.laporeon.picpay.exception.dtos;
+package com.laporeon.picpay.exception.utils;
 
 import java.time.Instant;
 import java.util.List;
