@@ -3,6 +3,7 @@ package com.laporeon.picpay.service;
 import com.laporeon.picpay.dtos.request.CreateWalletDTO;
 import com.laporeon.picpay.dtos.response.CreateWalletResponseDTO;
 import com.laporeon.picpay.entity.Wallet;
+import com.laporeon.picpay.exception.custom.InvalidDocumentTypeException;
 import com.laporeon.picpay.exception.custom.RegistrationConflictException;
 import com.laporeon.picpay.mapper.WalletMapper;
 import com.laporeon.picpay.repository.WalletRepository;
@@ -21,6 +22,10 @@ public class WalletService {
 
     @Transactional
     public CreateWalletResponseDTO createWallet(CreateWalletDTO dto) {
+        if (dto.document().length() != dto.walletType().getDocumentLength()) {
+            throw new InvalidDocumentTypeException(dto.walletType());
+        }
+
         if (walletRepository.existsByDocumentOrEmail(dto.document(), dto.email())) {
             throw new RegistrationConflictException("Unable to create wallet due to duplicate document or email.");
         }
