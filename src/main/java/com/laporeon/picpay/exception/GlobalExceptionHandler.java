@@ -1,10 +1,13 @@
 package com.laporeon.picpay.exception;
 
+import com.laporeon.picpay.exception.custom.InsufficientBalanceException;
 import com.laporeon.picpay.exception.custom.InvalidDocumentTypeException;
 import com.laporeon.picpay.exception.custom.RegistrationConflictException;
-import com.laporeon.picpay.exception.utils.ErrorResponse;
-import com.laporeon.picpay.exception.utils.ValidationErrorResponse;
-import com.laporeon.picpay.exception.utils.ValidationErrorResponse.FieldError;
+import com.laporeon.picpay.exception.custom.TransferNotAllowedException;
+import com.laporeon.picpay.exception.custom.WalletNotFoundException;
+import com.laporeon.picpay.exception.response.ErrorResponse;
+import com.laporeon.picpay.exception.response.ValidationErrorResponse;
+import com.laporeon.picpay.exception.response.ValidationErrorResponse.FieldError;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -26,7 +29,7 @@ public class GlobalExceptionHandler {
 
         ValidationErrorResponse error = new ValidationErrorResponse(
                 HttpStatus.UNPROCESSABLE_CONTENT.value(),
-                "VALIDATION_ERROR",
+                "VALIDATION_FAILED",
                 "Request validation failed for one or more fields",
                 errors,
                 Instant.now());
@@ -37,19 +40,52 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidDocumentTypeException.class)
     public ResponseEntity<ErrorResponse> handleInvalidDocumentTypeException(InvalidDocumentTypeException ex) {
         ErrorResponse error = new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.UNPROCESSABLE_CONTENT.value(),
                 "INVALID_DOCUMENT_TYPE",
                 ex.getMessage(),
                 Instant.now());
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT).body(error);
+    }
+
+    @ExceptionHandler(TransferNotAllowedException.class)
+    public ResponseEntity<ErrorResponse> handleTransferNotAllowedException(TransferNotAllowedException ex) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.UNPROCESSABLE_CONTENT.value(),
+                "TRANSFER_NOT_ALLOWED",
+                ex.getMessage(),
+                Instant.now());
+
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT).body(error);
+    }
+
+    @ExceptionHandler(InsufficientBalanceException.class)
+    public ResponseEntity<ErrorResponse> handleInsufficientBalanceException(InsufficientBalanceException ex) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.UNPROCESSABLE_CONTENT.value(),
+                "INSUFFICIENT_BALANCE",
+                ex.getMessage(),
+                Instant.now());
+
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT).body(error);
+    }
+
+    @ExceptionHandler(WalletNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleWalletNotFoundException(WalletNotFoundException ex) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                "WALLET_NOT_FOUND",
+                ex.getMessage(),
+                Instant.now());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
     @ExceptionHandler(RegistrationConflictException.class)
     public ResponseEntity<ErrorResponse> handleConflictException(RegistrationConflictException ex) {
         ErrorResponse error = new ErrorResponse(
                 HttpStatus.CONFLICT.value(),
-                "CONFLICT_ERROR",
+                "REGISTRATION_CONFLICT",
                 ex.getMessage(),
                 Instant.now());
 
