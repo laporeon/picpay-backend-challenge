@@ -1,4 +1,4 @@
-package com.laporeon.picpay.exception.utils;
+package com.laporeon.picpay.exception.response;
 
 import java.time.Instant;
 
