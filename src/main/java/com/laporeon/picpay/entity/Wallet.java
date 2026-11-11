@@ -30,7 +30,7 @@ public class Wallet {
     private String fullName;
 
     @Column(unique = true, nullable = false)
-    private  String document;
+    private String document;
 
     @Column(unique = true, nullable = false)
     private String email;
@@ -61,6 +61,18 @@ public class Wallet {
         this.email = email;
         this.password = password;
         this.walletType = walletType;
+    }
+
+    public void debit(BigDecimal amount) {
+        this.balance = this.balance.subtract(amount);
+    }
+
+    public void credit(BigDecimal amount) {
+        this.balance = this.balance.add(amount);
+    }
+
+    public boolean isBalanceGreaterOrEqual(BigDecimal amount) {
+        return this.balance.compareTo(amount) >= 0;
     }
 
     public UUID getId() {
