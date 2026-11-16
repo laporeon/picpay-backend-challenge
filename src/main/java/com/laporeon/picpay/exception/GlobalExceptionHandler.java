@@ -1,9 +1,11 @@
 package com.laporeon.picpay.exception;
 
+import com.laporeon.picpay.exception.custom.ClientException;
 import com.laporeon.picpay.exception.custom.InsufficientBalanceException;
 import com.laporeon.picpay.exception.custom.InvalidDocumentTypeException;
 import com.laporeon.picpay.exception.custom.RegistrationConflictException;
 import com.laporeon.picpay.exception.custom.TransferNotAllowedException;
+import com.laporeon.picpay.exception.custom.UnauthorizedException;
 import com.laporeon.picpay.exception.custom.WalletNotFoundException;
 import com.laporeon.picpay.exception.response.ErrorResponse;
 import com.laporeon.picpay.exception.response.ValidationErrorResponse;
@@ -90,6 +92,30 @@ public class GlobalExceptionHandler {
                 Instant.now());
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ErrorResponse> handleUnauthorizedException(UnauthorizedException ex) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.FORBIDDEN.value(),
+                "UNAUTHORIZED",
+                ex.getMessage(),
+                Instant.now()
+        );
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }
+
+    @ExceptionHandler(ClientException.class)
+    public ResponseEntity<ErrorResponse> handleClientExceptionClientException(ClientException ex) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.BAD_GATEWAY.value(),
+                "CLIENT_SERVICE_ERROR",
+                ex.getMessage(),
+                Instant.now()
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(error);
     }
 
     @ExceptionHandler(Exception.class)
