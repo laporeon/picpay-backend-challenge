@@ -16,7 +16,7 @@ public record CreateWalletDTO(
                 message = "Document must have 11 digits (CPF) or 14 digits (CNPJ)."
         )
         String document,
-        @NotBlank(message = "Email is required")
+        @NotBlank(message = "Email is required.")
         @Pattern(regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$", message = "Invalid email.")
         String email,
         @NotBlank(message = "Password is required.")
