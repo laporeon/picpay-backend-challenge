@@ -11,43 +11,51 @@ import com.laporeon.picpay.exception.custom.WalletNotFoundException;
 import com.laporeon.picpay.mapper.TransferMapper;
 import com.laporeon.picpay.repository.TransferRepository;
 import com.laporeon.picpay.repository.WalletRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 @Service
 public class TransferService {
     private final TransferRepository transferRepository;
     private final TransferMapper transferMapper;
     private final WalletRepository walletRepository;
+    private final AuthorizationService authorizationService;
 
-    public TransferService(TransferRepository transferRepository, TransferMapper transferMapper, WalletRepository walletRepository) {
+    public TransferService(TransferRepository transferRepository,
+                           TransferMapper transferMapper,
+                           WalletRepository walletRepository,
+                           AuthorizationService authorizationService) {
         this.transferRepository = transferRepository;
         this.transferMapper = transferMapper;
         this.walletRepository = walletRepository;
+        this.authorizationService = authorizationService;
     }
 
     @Transactional
     public TransferResponseDTO transfer(TransferRequestDTO dto) {
-        Wallet payer = walletRepository.findById(dto.payerId())
-                                       .orElseThrow(() -> new WalletNotFoundException(dto.payerId()));
+        Wallet payer = findWallet(dto.payerId());
+        Wallet payee = findWallet(dto.payeeId());
 
-        Wallet payee = walletRepository.findById(dto.payeeId())
-                                       .orElseThrow(() -> new WalletNotFoundException(dto.payeeId()));
-
-        isTransferAllowed(payer, dto);
+        validateTransfer(payer, dto);
+        authorizationService.ensureAuthorized();
 
         payer.debit(dto.amount());
         payee.credit(dto.amount());
 
-        walletRepository.save(payer);
-        walletRepository.save(payee);
-
-        Transfer transfer = transferMapper.toEntity(payee, payer, dto.amount());
-        transferRepository.save(transfer);
+        Transfer transfer = transferRepository.save(
+                transferMapper.toEntity(payee, payer, dto.amount())
+        );
         return transferMapper.toResponseDTO(transfer);
     }
 
-    private void isTransferAllowed(Wallet payer, TransferRequestDTO dto) {
+    private Wallet findWallet(UUID walletId) {
+        return walletRepository.findById(walletId)
+                               .orElseThrow(() -> new WalletNotFoundException(walletId));
+    }
+
+    private void validateTransfer(Wallet payer, TransferRequestDTO dto) {
         if (payer.getWalletType().equals(WalletType.SHOPKEEPER)) {
             throw new TransferNotAllowedException();
         }
