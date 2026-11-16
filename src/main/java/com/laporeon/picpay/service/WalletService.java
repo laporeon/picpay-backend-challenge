@@ -7,8 +7,8 @@ import com.laporeon.picpay.exception.custom.InvalidDocumentTypeException;
 import com.laporeon.picpay.exception.custom.RegistrationConflictException;
 import com.laporeon.picpay.mapper.WalletMapper;
 import com.laporeon.picpay.repository.WalletRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class WalletService {
@@ -30,8 +30,9 @@ public class WalletService {
             throw new RegistrationConflictException("Unable to create wallet due to duplicate document or email.");
         }
 
-        Wallet wallet = walletMapper.toEntity(dto);
-        walletRepository.save(wallet);
+        Wallet wallet = walletRepository.save(
+                walletMapper.toEntity(dto)
+        );
         return walletMapper.toResponseDTO(wallet);
     }
 }
