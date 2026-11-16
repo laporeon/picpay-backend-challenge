@@ -19,3 +19,7 @@ spring:
         format_sql: true
         show_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+
+client:
+  authorization-service:
+    url: https://util.devi.tools
