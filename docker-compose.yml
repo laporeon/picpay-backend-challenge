@@ -6,8 +6,8 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: "${PG_USERNAME:-admin}"
-      POSTGRES_PASSWORD: "${PG_PASSWORD:-dbpassword}"
+      POSTGRES_USER: "${PG_USERNAME:-postgres}"
+      POSTGRES_PASSWORD: "${PG_PASSWORD:-postgres}"
       POSTGRES_DB: "${POSTGRES_DB:-picpay_db}"
     volumes:
       - picpay_postgres_data:/var/lib/postgresql
