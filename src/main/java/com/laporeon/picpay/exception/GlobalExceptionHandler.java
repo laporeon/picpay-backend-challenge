@@ -10,6 +10,8 @@ import com.laporeon.picpay.exception.custom.WalletNotFoundException;
 import com.laporeon.picpay.exception.response.ErrorResponse;
 import com.laporeon.picpay.exception.response.ValidationErrorResponse;
 import com.laporeon.picpay.exception.response.ValidationErrorResponse.FieldError;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -21,6 +23,8 @@ import java.util.List;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ValidationErrorResponse> handleValidationException(MethodArgumentNotValidException ex) {
         List<FieldError> errors = ex.getBindingResult()
@@ -52,6 +56,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(TransferNotAllowedException.class)
     public ResponseEntity<ErrorResponse> handleTransferNotAllowedException(TransferNotAllowedException ex) {
+        log.warn("transfer not allowed: {}", ex.getMessage());
+
         ErrorResponse error = new ErrorResponse(
                 HttpStatus.UNPROCESSABLE_CONTENT.value(),
                 "TRANSFER_NOT_ALLOWED",
@@ -96,9 +102,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<ErrorResponse> handleUnauthorizedException(UnauthorizedException ex) {
+        log.warn("transfer denied by authorizer: {}", ex.getMessage());
+
         ErrorResponse error = new ErrorResponse(
                 HttpStatus.FORBIDDEN.value(),
-                "UNAUTHORIZED",
+                "TRANSFER_NOT_AUTHORIZED",
                 ex.getMessage(),
                 Instant.now()
         );
@@ -107,7 +115,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ClientException.class)
-    public ResponseEntity<ErrorResponse> handleClientExceptionClientException(ClientException ex) {
+    public ResponseEntity<ErrorResponse> handleClientException(ClientException ex) {
+        log.error("external service call failed: {}", ex.getMessage(), ex);
+
         ErrorResponse error = new ErrorResponse(
                 HttpStatus.BAD_GATEWAY.value(),
                 "CLIENT_SERVICE_ERROR",
@@ -120,6 +130,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
+        log.error("an unexpected error occurred", ex);
+
         ErrorResponse error = new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "INTERNAL_SERVER_ERROR",
