@@ -1,3 +1,27 @@
+server:
+  port: ${PORT:-8080}
+
 spring:
   application:
     name: picpay
+  config:
+    import: optional:file:.env[.properties]
+  datasource:
+    url: jdbc:postgresql://localhost:5432/${POSTGRES_DB:picpay_db}
+    username: ${PG_USERNAME}
+    password: ${PG_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+client:
+  authorization-service:
+    url: https://util.devi.tools
+  notification-service:
+    url: https://util.devi.tools
