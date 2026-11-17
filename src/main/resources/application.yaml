@@ -23,3 +23,5 @@ spring:
 client:
   authorization-service:
     url: https://util.devi.tools
+  notification-service:
+    url: https://util.devi.tools
