@@ -4,6 +4,7 @@ import com.laporeon.picpay.client.NotificationClient;
 import com.laporeon.picpay.dtos.request.NotificationRequestDTO;
 import feign.FeignException;
 import feign.Request;
+import feign.Response;
 import feign.RetryableException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,8 +22,6 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import feign.Response;
-
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -34,7 +33,7 @@ import static org.mockito.Mockito.when;
 @DisplayName("NotificationService Tests")
 class NotificationServiceTest {
     private static final String NOTIFY_URL = "https://util.devi.tools/api/v1/notify";
-    private static final String SENT_MESSAGE = "notification sent: Acme Store, you received 150.00 from John Doe.";
+    private static final String SENT_MESSAGE = "notification sent: Acme Store, you received R$ 150,00 from John Doe.";
     private static final String UNEXPECTED_STATUS_MESSAGE = "notification service returned an unexpected status";
     private static final String FAILURE_MESSAGE = "failed to send notification";
 
