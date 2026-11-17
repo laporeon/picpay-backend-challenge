@@ -1,5 +1,6 @@
 package com.laporeon.picpay.service;
 
+import com.laporeon.picpay.dtos.request.NotificationRequestDTO;
 import com.laporeon.picpay.dtos.request.TransferRequestDTO;
 import com.laporeon.picpay.dtos.response.TransferResponseDTO;
 import com.laporeon.picpay.entity.Transfer;
@@ -11,6 +12,7 @@ import com.laporeon.picpay.exception.custom.WalletNotFoundException;
 import com.laporeon.picpay.mapper.TransferMapper;
 import com.laporeon.picpay.repository.TransferRepository;
 import com.laporeon.picpay.repository.WalletRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,15 +24,18 @@ public class TransferService {
     private final TransferMapper transferMapper;
     private final WalletRepository walletRepository;
     private final AuthorizationService authorizationService;
+    private final ApplicationEventPublisher eventPublisher;
 
     public TransferService(TransferRepository transferRepository,
                            TransferMapper transferMapper,
                            WalletRepository walletRepository,
-                           AuthorizationService authorizationService) {
+                           AuthorizationService authorizationService,
+                           ApplicationEventPublisher eventPublisher) {
         this.transferRepository = transferRepository;
         this.transferMapper = transferMapper;
         this.walletRepository = walletRepository;
         this.authorizationService = authorizationService;
+        this.eventPublisher = eventPublisher;
     }
 
     @Transactional
@@ -47,6 +52,11 @@ public class TransferService {
         Transfer transfer = transferRepository.save(
                 transferMapper.toEntity(payee, payer, dto.amount())
         );
+
+        eventPublisher.publishEvent(
+                new NotificationRequestDTO(payer.getFullName(), payee.getFullName(), dto.amount())
+        );
+
         return transferMapper.toResponseDTO(transfer);
     }
 
